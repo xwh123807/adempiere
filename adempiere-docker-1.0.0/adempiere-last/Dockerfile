@@ -1,6 +1,9 @@
 FROM openjdk:8-jdk
 MAINTAINER raul.capecce@openupsolutions.com , victor.perez@e-evolution.com
 
+RUN apt update && \
+apt install -y postgresql postgresql-contrib
+
 ARG ADEMPIERE_BINARY
 ARG ADEMPIERE_SRC_DIR
 ARG ADEMPIERE_DB_HOST
@@ -62,11 +65,7 @@ cd /opt/Adempiere && \
 cp AdempiereEnvTemplate.properties AdempiereEnv.properties && \
 cp utils/myEnvironmentTemplate.sh utils/myEnvironment.sh && \
 
-chmod 755 /root/start-adempiere.sh && \
-
-
-apt update && \
-apt install -y postgresql postgresql-contrib
+chmod 755 /root/start-adempiere.sh
 
 
 CMD /root/start-adempiere.sh > /tmp/start-adempiere.log
