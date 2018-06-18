@@ -1,0 +1,51 @@
+database:
+    image: postgres:9.6
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER:postgres
+      - POSTGRES_PASSWORD:postgres
+      - PGDATA:/var/lib/postgresql/data/pgdata
+      - POSTGRES_INITDB_ARGS:''
+      - POSTGRES_INITDB_XLOGDIR:''
+
+pgadmin:
+  image: dpage/pgadmin4
+  ports:
+    - 8280:80
+  environment:
+    PGADMIN_DEFAULT_PASSWORD: admin
+    PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+  links:
+    - database:database
+
+adempiere-tenant:
+    image: eevolution # Name of the instance for docker create based on project name
+    ports:
+      - 8277:8888 # http port where the web client will be exposed
+      - 8444:444 # https port where the web client will be exposed
+    environment:
+      ADEMPIERE_DB_INIT: Y # ATENTION If is "Y" it will be replace de actual defined database with a empty ADempiere seed
+      ADEMPIERE_DB_HOST: "database"
+      ADEMPIERE_DB_PORT: 5432
+      ADEMPIERE_DB_NAME: "eevolution"
+      ADEMPIERE_DB_USER: "eevolution"
+      ADEMPIERE_DB_PASSWORD: adempiere
+      ADEMPIERE_DB_ADMIN_PASSWORD: postgres 
+    links:
+      - database:database             
+    # build:
+    #   context: .
+    #   dockerfile: ./adempiere-last/Dockerfile
+    #   args:
+    #     ADEMPIERE_BINARY : ${ADEMPIERE_BINARY}
+    #     ADEMPIERE_SRC_DIR: "./${COMPOSE_PROJECT_NAME}" # Directory that contain the ADempiere installer, customization and localization
+    #     ADEMPIERE_DB_HOST: "database"
+    #     ADEMPIERE_DB_PORT: 5432
+    #     ADEMPIERE_DB_NAME: "eevolution"
+    #     ADEMPIERE_DB_USER: "eevolution"
+    #     ADEMPIERE_DB_PASSWORD: adempiere
+    #     ADEMPIERE_DB_ADMIN_PASSWORD: postgres  
+  
